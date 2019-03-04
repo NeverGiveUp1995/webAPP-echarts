@@ -30,10 +30,80 @@ window.onload = function () {
                         chartTabsDom[index].id = "";
                     }
                 }
-                console.log(demo01(echarts));
-                demo01(echarts).creatChart(`4. ${str}`);
+
+                //调用图表渲染
+                let classData = [
+                    [-2.7, 0.02],
+                    [2.67, 0.98],
+                    [-3.72, 0.74],
+                    [-3.36, 0.03],
+                    [1.13, 0.62],
+                    [0.56, 0.64],
+                    [-1.15, 0.65],
+                    [-0.47, 0.71],
+                    [-0.87, 0.6],
+                    [0.68, 0.05],
+                    [3.96, 0.29],
+                    [1.86, 0.48],
+                    [0.9, 0.75],
+                    [-2.39, 0.64],
+                    [-3.97, 0.46]
+                ];
+                let schoolData = [
+                    [-2.7, 0.25], [2.67, 0.12], [-3.72, 0.88], [-3.36, 0.81], [1.13, 0.19], [0.56, 0.94], [-1.15, 0.12], [-0.47, 0.32], [-0.87, 0.89], [0.68, 0.62], [3.96, 0.79], [1.86, 0.58], [0.9, 0.29], [-2.39, 0.33], [-3.97, 0.19]
+                ];
+                let nameData = [];
+                let valueData = [];
+
+                for (let i = 0; i < 50; i++) {
+                    let random = Math.random();
+                    nameData.push(`O${i + 1}`);
+                    valueData.push(parseInt(random * 8 * 100) / 100 - 4);
+                }
+                /**
+                 * option :{
+                 *  parentSelector:"",必传
+                 *  canvasSelector："",必传
+                 *  proportionOfWH："",
+                 *  topicOpt: {
+                 *      startValOfRange: 0,
+                 *      endValOfRange: 30,
+                 *      rangeCriticalVal: 24,
+                 *  },
+                 *  datas:{
+                 *      classData:[[x1,y1],[x2,y2],...],班级的数据（必传）
+                 *      schoolData:[[x1,y1],[x2,y2]
+                 *      ,...],全校的数据（必传）
+                 *      topicData:{
+                 *          nameData:[];
+                 *      };题目难度数据（必传）
+                 *  }；必传
+                 * }
+                 * },参数配置对象
+                 */
+                demo01(echarts).renderChart({
+                    parentSelector: ".radarChartArea",//必传
+                    canvasSelector: "#demo01",//必传
+                    proportionOfWH: 1.5,
+                    topicOpt: {
+                        startValOfRange: 0,
+                        endValOfRange: 30,
+                        rangeCriticalVal: 24,
+                    },
+                    datas: {
+                        classData,
+                        schoolData,
+                        topicData: {
+                            nameData,
+                            valueData
+                        },
+                    }
+                });
             }
         }
+
+        //点击当前tab
+        chartTabsDom[parseInt(currentTab)].click();
     };
     renderTabs(chartTabs);
 };
