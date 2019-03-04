@@ -17,7 +17,7 @@ export default function () {
             item[0] -= 126.5;
             item[1] -= 17.5;
         })
-        option = {
+       let option = {
             dataZoom: [
                 {
                     type: 'inside',
