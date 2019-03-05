@@ -33,7 +33,40 @@ export default function (echarts) {
             tooltip: {
                 trigger: 'axis',
                 axisPointer: {
+                    type:'line',
                     animation: true,
+                },
+                formatter: (data) => {
+                    let classData = {};
+                    let schoolData = {};
+                    let tipStr = "";
+                    data.map(item => {
+                        if (item.axisIndex == 0) {
+                            classData.x = item.data[0];
+                            classData.y = parseInt(item.data[1] * 10000) / 100 + "%";
+                            tipStr += `<p style="font-weight: bold;font-size: 15px">本班：</p>
+                                <p>
+                                    <p style="padding-left: 20px">难度：${classData.x || "暂无数据"}</p>
+                                    <p style="padding-left: 20px">分布比：${classData.y || "暂无数据"}</p>
+                                </p><br>`;
+                        } else if (item.axisIndex == 1) {
+                            tipStr = `<p style="font-weight: bold;font-size: 15px">题目难度分布：</p>
+                                <p>
+                                    <p style="padding-left: 20px">难度：${parseInt((item.data-4)*100)/100 || "暂无数据"}</p>
+                                </p>`;
+                        } else if (item.axisIndex == 2) {
+                            schoolData.x = item.data[0];
+                            schoolData.y = parseInt(item.data[1] * 10000) / 100 + "%";
+                            tipStr += `<p style="font-weight: bold;font-size: 15px">全校：</p>
+                                <p>
+                                    <p style="padding-left: 20px">难度：${schoolData.x || "暂无数据"}</p>
+                                    <p style="padding-left: 20px">分布比：${schoolData.y || "暂无数据"}</p>
+                                </p><br>`;
+                        } else {
+
+                        }
+                    });
+                    return tipStr;
                 }
             },
 
@@ -99,7 +132,6 @@ export default function (echarts) {
                     name: '难度',
                     type: 'value',
                     gridIndex: 1,
-                    axisLine: {onZero: true},
                     min: 0,
                     max: 8,
                     axisLabel: {
@@ -108,7 +140,6 @@ export default function (echarts) {
                             return data - 4
                         }
                     }
-
                 },
                 {
                     show: true,
@@ -143,7 +174,7 @@ export default function (echarts) {
 
                 },
                 {
-                    show: true,
+                    show: false,
                     gridIndex: 1,
                     type: 'category',
                     data: nameData,
@@ -191,6 +222,7 @@ export default function (echarts) {
                         color: '#666',
                         fontSize: 10,
                         position: 'right',
+                        distance:0,
                         formatter: (data) => {
                             return data.name;
                         }
@@ -221,7 +253,7 @@ export default function (echarts) {
         let parentAreaDom = document.querySelector(parentSelector);
         let chartDom1 = document.querySelector(canvasSelector);
         let width = parseInt(parentAreaDom.scrollWidth);
-        let height = parseInt(proportionOfWH * width);
+        let height = proportionOfWH * width;
         let eCharts1 = echarts.init(chartDom1, 'light', {width, height});
         eCharts1.setOption(getOption(option));
     };

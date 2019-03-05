@@ -46,6 +46,7 @@ h2.title {
     overflow-y: auto;
     font-size: 14px;
 }
+
 #myChart {
     width: 98%;
     min-height: 300px;

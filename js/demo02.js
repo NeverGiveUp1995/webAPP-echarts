@@ -1,23 +1,45 @@
-export default function () {
-    let reportOfSubject = {};
+export default function (echarts) {
+    let reportOfSubjectChart = {};
 
-    let getOption = () => {
-        let nameData = [];
-        let valueData = [];
-        for (let i = 0; i < 10; i++) {
-            let randomX = Math.random();
-            let randomY = Math.random();
-            let x = parseInt(randomX * 40 * 100) / 100 + 106.5;
-            let y = parseInt(randomY * 18 * 100) / 100 + 8.1;
-            valueData.push([x, y]);
-            nameData.push(`高一（${i}）`);
-        }
-
+    let getOption = (opt) => {
+        let {nameData, valueData} = opt;
         valueData.map(item => {
             item[0] -= 126.5;
             item[1] -= 17.5;
-        })
-       let option = {
+        });
+        let getRanDomColorList = () => {
+            let colorList = [];
+            //十六进制数组
+            let hexadecimalArr = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F",];
+            for (let i = 0; i < valueData.length; i++) {
+                let colorStr = "";
+                do {
+                    colorStr = `#${hexadecimalArr[parseInt(Math.random() * 16)]}${hexadecimalArr[parseInt(Math.random() * 16)]}${hexadecimalArr[parseInt(Math.random() * 16)]}${hexadecimalArr[parseInt(Math.random() * 16)]}${hexadecimalArr[parseInt(Math.random() * 16)]}${hexadecimalArr[parseInt(Math.random() * 16)]}`;
+                } while (colorStr === "#FFFFFF");
+                colorList.push(colorStr);
+            }
+            return colorList;
+        };
+        let option = {
+            tooltip: {
+                trigger: 'item',
+                axisPointer: {
+                    type: "line",
+                    snap: true,
+
+                },
+                formatter: (data) => {
+                    console.log("&&&", data)
+                    let tipStr = "";
+                    tipStr += `<p style="font-size: 15px;font-weight: bold">${data.seriesName}</p>
+                                <p>
+                                    <p style="padding-left: 15px">平均分：${parseInt((data.data[0] + 126.5) * 100) / 100}</p>
+                                    <p style="padding-left: 15px">标准差：${parseInt((data.data[1] + 17.5) * 100) / 100}</p>
+                                </p>
+                                `;
+                    return tipStr;
+                }
+            },
             dataZoom: [
                 {
                     type: 'inside',
@@ -34,6 +56,7 @@ export default function () {
                 min: -20,
                 max: 20,
                 axisLabel: {
+                    fontSize: 10,
                     formatter: (data) => {
                         return parseInt((data + 126.5) * 10) / 10;
                     }
@@ -41,10 +64,10 @@ export default function () {
             },
             yAxis: {
                 type: 'value',
-
                 min: -9,
                 max: 9,
                 axisLabel: {
+                    fontSize: 10,
                     formatter: (data) => {
                         return parseInt((data + 17.1) * 10) / 10;
                     }
@@ -52,14 +75,25 @@ export default function () {
             },
             series: [
                 {
+                    name: '成绩竞争力分析',
                     type: 'scatter',
-                    color: 'rgb(49,194,124)',
+                    itemStyle: {
+                        color: (params) => {
+                            let colorList = getRanDomColorList();
+                            return colorList[params.dataIndex]
+
+                        },
+                    },
+                    symbolSize: [15, 15],
                     label: {
                         show: true,
                         color: '#333',
                         position: 'top',
-                        padding: 10,
-                        backgroundColor: '#fff',
+                        distance: 1,
+                        fontSize: 10,
+                        padding: 2,
+                        borderRadius: 2,
+                        backgroundColor: '#e4e4e4',
                         formatter: (data) => {
                             console.log(data)
                             let index = data.dataIndex;
@@ -76,8 +110,14 @@ export default function () {
      *渲染图表
      * @param option:配置对象
      */
-    reportOfSubject.renderChart = (option) => {
-
+    reportOfSubjectChart.renderChart = (option) => {
+        let {parentSelector, canvasSelector, proportionOfWH = 1} = option;
+        let parentDom = document.querySelector(parentSelector);
+        let canvasDom = document.querySelector(canvasSelector);
+        let width = parseInt(parentDom.scrollWidth);
+        let height = proportionOfWH * width;
+        let myCharts = echarts.init(canvasDom, "light", {width, height});
+        myCharts.setOption(getOption(option));
     };
-    return reportOfSubject;
+    return reportOfSubjectChart;
 }
